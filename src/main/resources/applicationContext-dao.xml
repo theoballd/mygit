@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+
+
+
+    <context:component-scan base-package="com.zwq">
+    <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <!--    配置properties文件-->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+
+    <!-- 配置数据库信息，代替MyBatis的congig.xml -->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="${jdbc.driver}"></property>
+        <property name="jdbcUrl" value="${jdbc.url}"></property>
+        <property name="user" value="${jdbc.username}"></property>
+        <property name="password" value="${jdbc.password}"></property>
+    </bean>
+
+
+
+
+    <!-- 配置包扫描器-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+        <!-- basePackage属性配置要扫描的包，多个包之间可用","进行分隔 -->
+        <property name="basePackage" value="com.zwq.dao"></property>
+    </bean>
+
+        <!-- 在SpringIoc容器中创见MyBatis核心类SqlsessionFactory -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"></property>
+        <!-- 设置MyBatis核心配置文件 -->
+        <property name="configLocation" value="classpath:MyBatis-config.xml" ></property>
+    <property name="mapperLocations"  value="classpath:mapper/*.xml"></property>
+    </bean>
+
+
+
+            <!--    配置事务管理器-->
+
+    <bean id="transactionManager"   class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!--控制数据源-->
+        <property name="dataSource"  ref="dataSource"></property>
+    </bean>
+
+        <!--    使用xml配置形式的事务-->
+
+    <aop:config>
+    <!--        切入点表达式-->
+        <aop:pointcut id="txPoint" expression="execution(* com.zwq.service..*(..))"/>   <!-- 事务切入点   -->
+    <!--        配置事务增强 -->
+        <aop:advisor advice-ref="txAdvice"  pointcut-ref="txPoint"></aop:advisor>
+    </aop:config>
+
+    <aop:aspectj-autoproxy  proxy-target-class="true"/>
+
+
+
+    <!--    配置事务增强，事务如何切入-->
+    <tx:advice id="txAdvice"      transaction-manager="transactionManager">
+        <tx:attributes>
+    <!--            所有方法都是事务方法-->
+            <tx:method name="*"/>
+    <!--            以get开始的方法-->
+            <tx:method name="get" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+
+</beans>

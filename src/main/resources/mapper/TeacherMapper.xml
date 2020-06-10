@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zwq.dao.TeacherMapper">
+  <resultMap id="BaseResultMap" type="com.zwq.bean.Teacher">
+    <id column="tea_id" jdbcType="VARCHAR" property="teaId" />
+    <result column="tea_password" jdbcType="VARCHAR" property="teaPassword" />
+    <result column="tea_name" jdbcType="VARCHAR" property="teaName" />
+    <result column="tea_class_id" jdbcType="INTEGER" property="teaClassId" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    tea_id, tea_password, tea_name, tea_class_id
+  </sql>
+  <select id="selectByExample" parameterType="com.zwq.bean.TeacherExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from teacher_table
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from teacher_table
+    where tea_id = #{teaId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="String">
+    delete from teacher_table
+    where tea_id = #{teaId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.zwq.bean.TeacherExample">
+    delete from teacher_table
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.zwq.bean.Teacher">
+    insert into teacher_table (tea_id, tea_password, tea_name, 
+      tea_class_id)
+    values (#{teaId,jdbcType=VARCHAR}, #{teaPassword,jdbcType=VARCHAR}, #{teaName,jdbcType=VARCHAR}, 
+      #{teaClassId,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.zwq.bean.Teacher">
+    insert into teacher_table
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="teaId != null">
+        tea_id,
+      </if>
+      <if test="teaPassword != null">
+        tea_password,
+      </if>
+      <if test="teaName != null">
+        tea_name,
+      </if>
+      <if test="teaClassId != null">
+        tea_class_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="teaId != null">
+        #{teaId,jdbcType=VARCHAR},
+      </if>
+      <if test="teaPassword != null">
+        #{teaPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="teaName != null">
+        #{teaName,jdbcType=VARCHAR},
+      </if>
+      <if test="teaClassId != null">
+        #{teaClassId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.zwq.bean.TeacherExample" resultType="java.lang.Long">
+    select count(*) from teacher_table
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update teacher_table
+    <set>
+      <if test="record.teaId != null">
+        tea_id = #{record.teaId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.teaPassword != null">
+        tea_password = #{record.teaPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="record.teaName != null">
+        tea_name = #{record.teaName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.teaClassId != null">
+        tea_class_id = #{record.teaClassId,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update teacher_table
+    set tea_id = #{record.teaId,jdbcType=VARCHAR},
+      tea_password = #{record.teaPassword,jdbcType=VARCHAR},
+      tea_name = #{record.teaName,jdbcType=VARCHAR},
+      tea_class_id = #{record.teaClassId,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zwq.bean.Teacher">
+    update teacher_table
+    <set>
+      <if test="teaPassword != null">
+        tea_password = #{teaPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="teaName != null">
+        tea_name = #{teaName,jdbcType=VARCHAR},
+      </if>
+      <if test="teaClassId != null">
+        tea_class_id = #{teaClassId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where tea_id = #{teaId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zwq.bean.Teacher">
+    update teacher_table
+    set tea_password = #{teaPassword,jdbcType=VARCHAR},
+      tea_name = #{teaName,jdbcType=VARCHAR},
+      tea_class_id = #{teaClassId,jdbcType=INTEGER}
+    where tea_id = #{teaId,jdbcType=VARCHAR}
+  </update>
+</mapper>
